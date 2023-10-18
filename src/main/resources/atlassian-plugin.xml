@@ -1,0 +1,42 @@
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="time-in-status"/>
+    
+    <!-- add our web resources -->
+    <web-resource key="jira.plugin-resources" name="jira.plugin Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        
+        <resource type="download" name="jira.plugin.css" location="/css/jira.plugin.css"/>
+        <resource type="download" name="jira.plugin.js" location="/js/jira.plugin.js"/>
+        <resource type="download" name="images/" location="/images"/>
+        <context>jira.plugin</context>
+    </web-resource>
+
+    <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
+    <workflow-function key="function-config-page"
+                       class="ru.itq.timeinstatus.postfunction.IssueResolveFunctionFactory"
+                       name="Страница настройки постфункций"
+                       i18n-name-key="time-in-status-config-page.name">
+        <description>Страница настройки постфункций</description>
+        <function-class>ru.itq.timeinstatus.postfunction.IssueResolveFunction</function-class>
+        <resource type="velocity" name="view" location="/templates/postfunction/function-view.vm"/>
+        <resource type="velocity" name="input-parameters" location="/templates/postfunction/function-edit.vm"/>
+        <resource type="velocity" name="edit-parameters" location="/templates/postfunction/function-edit.vm"/>
+    </workflow-function>
+
+    <component-import key="ao" interface="com.atlassian.activeobjects.external.ActiveObjects"/>
+
+    <ao key="ao-module">
+        <description>The configuration of the Active Object service</description>
+        <entity>ru.itq.timeinstatus.ao.History</entity>
+    </ao>
+
+</atlassian-plugin>

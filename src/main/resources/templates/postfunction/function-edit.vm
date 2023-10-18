@@ -1,0 +1,24 @@
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+<div class="field-group" style="margin: 8px auto 8px auto; height: 40px; display: flex">
+    <label for="checklistCreationCheckboxFieldId"
+           style="width: 180px; word-wrap: break-word; direction: rtl; margin: auto 20px auto 0"
+    >
+        $i18n.getText('time-in-status-field-label')
+    </label>
+    <select name="issueResolveHistoryFieldId" id="issueResolveHistoryFieldId"
+            style="width: 700px; margin: auto 20px auto 0">
+        #foreach($issueResolveHistoryField in $issueResolveHistoryFields)
+            <option value="$issueResolveHistoryField.getKey()"
+                #if($issueResolveHistoryFieldIdSelected==$issueResolveHistoryField.getKey())
+                    selected
+                #end
+            >
+                $issueResolveHistoryField.getValue()
+            </option>
+        #end
+    </select>
+</div>
+
+<script>
+    AJS.$("#issueResolveHistoryFieldId").auiSelect2();
+</script>
