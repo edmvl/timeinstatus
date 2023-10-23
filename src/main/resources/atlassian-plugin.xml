@@ -13,23 +13,39 @@
     <!-- add our web resources -->
     <web-resource key="jira.plugin-resources" name="jira.plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
-        
         <resource type="download" name="jira.plugin.css" location="/css/jira.plugin.css"/>
         <resource type="download" name="jira.plugin.js" location="/js/jira.plugin.js"/>
+        <resource type="download" name="Chart.min.css" location="/css/chart/Chart.min.css"/>
+        <resource type="download" name="Chart.min.js" location="/js/chart/Chart.min.js"/>
+        <resource type="download" name="chartjs-plugin-datalabels.min.js" location="/js/chart/chartjs-plugin-datalabels.min.js"/>
         <resource type="download" name="images/" location="/images"/>
         <context>jira.plugin</context>
+        <context>jira.view.issue</context>
+        <context>jira.navigator.advanced</context>
+        <context>jira.navigator.simple</context>
     </web-resource>
 
     <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
-    <workflow-function key="function-config-page"
+    <workflow-function key="issue-resolve-function"
                        class="ru.itq.timeinstatus.postfunction.IssueResolveFunctionFactory"
                        name="Страница настройки постфункций"
-                       i18n-name-key="time-in-status-config-page.name">
+                       i18n-name-key="issue-resolve-function-config-page.name">
         <description>Страница настройки постфункций</description>
         <function-class>ru.itq.timeinstatus.postfunction.IssueResolveFunction</function-class>
+        <resource type="velocity" name="view" location="/templates/postfunction/issueresolve/function-view.vm"/>
+        <resource type="velocity" name="input-parameters" location="/templates/postfunction/issueresolve/function-edit.vm"/>
+        <resource type="velocity" name="edit-parameters" location="/templates/postfunction/issueresolve/function-edit.vm"/>
+    </workflow-function>
+
+    <workflow-function key="time-tracking-function"
+                       class="ru.itq.timeinstatus.postfunction.TimeTrackingFunctionFactory"
+                       name="Страница настройки постфункций"
+                       i18n-name-key="time-tracking-function-config-page.name">
+        <description>Страница настройки постфункций</description>
+        <function-class>ru.itq.timeinstatus.postfunction.TimeTrackingFunction</function-class>
         <resource type="velocity" name="view" location="/templates/postfunction/function-view.vm"/>
-        <resource type="velocity" name="input-parameters" location="/templates/postfunction/function-edit.vm"/>
-        <resource type="velocity" name="edit-parameters" location="/templates/postfunction/function-edit.vm"/>
+        <resource type="velocity" name="input-parameters" location="/templates/postfunction/timetracking/function-edit.vm"/>
+        <resource type="velocity" name="edit-parameters" location="/templates/postfunction/timetracking/function-edit.vm"/>
     </workflow-function>
 
     <component-import key="ao" interface="com.atlassian.activeobjects.external.ActiveObjects"/>
@@ -37,6 +53,22 @@
     <ao key="ao-module">
         <description>The configuration of the Active Object service</description>
         <entity>ru.itq.timeinstatus.ao.History</entity>
+        <entity>ru.itq.timeinstatus.ao.Statistic</entity>
     </ao>
+
+    <customfield-type name="Custom statistic field"  key="custom-statistic-customField"
+                      class="ru.itq.timeinstatus.customfield.CustomStatisticField">
+        <description key="custom-statistic-customField">Statistic custom field</description>
+        <resource name="view" type="velocity" location="/templates/statisticfield/view.vm"/>
+    </customfield-type>
+
+    <web-panel name="Web Panel Forms" i18n-name-key="web-panel-form.name" key="web-panel-form" location="atl.jira.view.issue.left.context" height="200" weight="200">
+        <description key="web-panel-form.description">Web Panel Forms</description>
+        <resource type="velocity" name="view" location="/templates/statisticfield/viewStats.vm"/>
+        <supports-ajax-load>true</supports-ajax-load>
+        <context-provider class="ru.itq.timeinstatus.provider.ModelProvider"/>
+        <condition class="ru.itq.timeinstatus.conditions.ConditionTimeTracking" invert="false" />
+        <sortable>true</sortable>
+    </web-panel>
 
 </atlassian-plugin>

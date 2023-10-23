@@ -1,0 +1,13 @@
+$webResourceManager.requireResource("ru.itq.timeinstatus:open-poker-resources")
+
+<div style="margin: 20px; max-width: 500px; min-width: 500px; max-height: 300px; min-height: 300px">
+    <canvas id="results-chart"></canvas>
+</div>
+
+#foreach($statistic in $statisticForIssue)
+    <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()" data-state="$statistic.getLastStateName()->$statistic.getNextStateName()"></div>
+#end
+<script>
+
+renderChart();
+</script>
