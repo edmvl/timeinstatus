@@ -48,31 +48,9 @@ public class TimeTrackingFunction extends AbstractJiraFunctionProvider {
             String currentStatus = issue.getStatus().getSimpleStatus().getName();
             String nextStatus = statusManager.getStatus(nextStatusIdForAction).getSimpleStatus().getName();
             statisticService.saveStatistic(
-                    issue.getProjectId(), issue.getKey(), currentStatus, startDate, nextStatus, finishDate,
-                    finishDate.getTime() - startDate.getTime()
+                    issue.getProjectId(), issue.getKey(), currentStatus, startDate, nextStatus, finishDate
             );
         }
-    }
-
-
-    private Object getParameter(Map args, String key) {
-        Object value = args.get(key);
-        if (value == null) {
-            log.error("[{}] Couldn't get value of function parameter {}", getClass().getSimpleName(), key);
-            throw new RuntimeException(i18n.getText("parameter-getting-error", key));
-        }
-        return value;
-    }
-
-    private boolean isDateTimeField(CustomField customField) {
-        if (Objects.isNull(customField)) {
-            return false;
-        }
-        CustomFieldType customFieldType = customField.getCustomFieldType();
-        if (Objects.isNull(customFieldType)) {
-            return false;
-        }
-        return "datetime".equals(customFieldType.getDescriptor().getKey());
     }
 
 }

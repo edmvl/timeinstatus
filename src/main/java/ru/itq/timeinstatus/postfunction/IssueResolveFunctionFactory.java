@@ -46,7 +46,6 @@ public class IssueResolveFunctionFactory extends AbstractWorkflowPluginFactory i
 
     @Override
     protected void getVelocityParamsForView(Map<String, Object> map, AbstractDescriptor abstractDescriptor) {
-        System.out.println("test");
     }
 
     @Override
