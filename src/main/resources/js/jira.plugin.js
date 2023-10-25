@@ -24,7 +24,8 @@ function getColor(index) {
 
 var timeSpentMap = {};
 var allSpentTime = 0;
-function renderChart() {
+
+function fillTimeSpentMap() {
     $.each($(".time-in-status-stats"), function (i, e) {
         var state = e.dataset.state;
         var spent = parseInt(e.dataset.spent);
@@ -35,6 +36,9 @@ function renderChart() {
             timeSpentMap[state] = spent;
         }
     })
+}
+
+function renderChart() {
     var chartData = {
         data: [], labels: [], colors: []
     }

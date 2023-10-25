@@ -1,0 +1,64 @@
+<html lang="$i18n.getLocale().getLanguage()">
+<head>
+    <title>$i18n.getText("com.simbirsoft.estimate.email-config-input.title")</title>
+    <meta name="decorator" content="atl.general">
+    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2");
+</head>
+<body>
+<div class="field-group" style="margin: 8px auto 8px auto; height: 40px; display: flex">
+    <label for="checklistCreationCheckboxFieldId"
+           style="width: 180px; word-wrap: break-word; direction: rtl; margin: auto 20px auto 0"
+    >
+        Epic
+    </label>
+    <select name="issueIdsForProject" id="issueIdsForProject"
+            style="width: 700px; margin: auto 20px auto 0">
+        #foreach($epicKey in $issueIdsForProject)
+            <option
+                    value="$epicKey"
+                #if($selectedEpicKey==$epicKey)
+                    selected
+                #end
+
+            >
+                $epicKey
+            </option>
+        #end
+    </select>
+</div>
+<div class="field-group" style="margin: 8px auto 8px auto; height: 40px; display: flex">
+    <label for="checklistCreationCheckboxFieldId"
+           style="width: 180px; word-wrap: break-word; direction: rtl; margin: auto 20px auto 0"
+    >
+        Issue
+    </label>
+    <select name="inwardLinks" id="inwardLinks" multiple
+            style="width: 700px; margin: auto 20px auto 0">
+        #foreach($inwardLink in $inwardLinks)
+            <option
+                    value="$inwardLink"
+                #if($selectedIssueKeys.contains($inwardLink))
+                    selected
+                #end
+            >
+                $inwardLink
+            </option>
+        #end
+    </select>
+</div>
+
+<div style="margin: 20px; max-width: 500px; min-width: 500px; max-height: 300px; min-height: 300px">
+    <canvas id="results-chart"></canvas>
+</div>
+
+    #foreach($statistic in $statisticForIssue)
+    <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()"
+         data-state="$statistic.getLastStateName()->$statistic.getNextStateName()"></div>
+    #end
+<script>
+    AJS.$("#issueIdsForProject").auiSelect2();
+    AJS.$("#inwardLinks").auiSelect2();
+    fillTimeSpentMap();
+    renderChart();
+</script>
+</body>

@@ -19,10 +19,9 @@
         <resource type="download" name="Chart.min.js" location="/js/chart/Chart.min.js"/>
         <resource type="download" name="chartjs-plugin-datalabels.min.js" location="/js/chart/chartjs-plugin-datalabels.min.js"/>
         <resource type="download" name="images/" location="/images"/>
+        <context>atl.general</context>
         <context>jira.plugin</context>
         <context>jira.view.issue</context>
-        <context>jira.navigator.advanced</context>
-        <context>jira.navigator.simple</context>
     </web-resource>
 
     <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
@@ -62,7 +61,9 @@
         <resource name="view" type="velocity" location="/templates/statisticfield/view.vm"/>
     </customfield-type>
 
-    <web-panel name="Web Panel Forms" i18n-name-key="web-panel-form.name" key="web-panel-form" location="atl.jira.view.issue.left.context" height="200" weight="200">
+    <web-panel name="Web Panel Forms" i18n-name-key="web-panel-form.name" key="web-panel-form"
+               location="atl.jira.view.issue.left.context" height="200" weight="200"
+    >
         <description key="web-panel-form.description">Web Panel Forms</description>
         <resource type="velocity" name="view" location="/templates/statisticfield/viewStats.vm"/>
         <supports-ajax-load>true</supports-ajax-load>
@@ -71,4 +72,8 @@
         <sortable>true</sortable>
     </web-panel>
 
+    <servlet name="Statistic Servlet" key="helloWorld" class="ru.itq.timeinstatus.actions.StatisticServlet">
+        <url-pattern>/statistic</url-pattern>
+    </servlet>
+    <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer" />`
 </atlassian-plugin>

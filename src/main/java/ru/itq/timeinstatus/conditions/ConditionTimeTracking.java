@@ -24,7 +24,7 @@ public class ConditionTimeTracking extends AbstractIssueCondition {
 
     @Override
     public boolean shouldDisplay(ApplicationUser applicationUser, Issue issue, JiraHelper jiraHelper) {
-        return !Objects.isNull(issue);
+        return false;
     }
 
 

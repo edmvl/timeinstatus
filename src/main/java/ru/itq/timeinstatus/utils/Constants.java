@@ -8,4 +8,9 @@ public class Constants {
     public final static String ISSUE_RESOLVE_HISTORY_FIELD_ID_SELECTED = "issueResolveHistoryFieldIdSelected";
     public final static String ISSUE_RESOLVE_HISTORY_FIELD_ID = "issueResolveHistoryFieldId";
 
+    public static final int WORKING_DAY_START_HOUR = 9;
+    public static final int WORKING_DAY_START_MINUTE = 0;
+    public static final int WORKING_DAY_END_HOUR = 18;
+    public static final int WORKING_DAY_END_MINUTE = 0;
+
 }
