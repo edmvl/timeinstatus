@@ -52,6 +52,18 @@ function renderChart() {
     initiateChart(chartData);
 }
 
+function longToTime(long) {
+    var seconds = long / 1000;
+    var d = Math.floor(seconds / 32400);
+    var h = Math.floor(seconds / 3600 - d * 9);
+    var m = Math.floor(seconds % 3600 / 60);
+    return addLeadingZero(d) + ":" + addLeadingZero(h) + ":" + addLeadingZero(m);
+}
+
+function addLeadingZero(d) {
+    return d > 9 ? "" + d : "0" + d;
+}
+
 function initiateChart(chartData) {
     var data = {
         datasets: [{
@@ -77,7 +89,9 @@ function initiateChart(chartData) {
                         return '';
                     },
                     label: function (tooltipItem, data) {
-                        return data.labels[tooltipItem.index];
+                        let datum = data.datasets[0].data[tooltipItem.index];
+                        let label = data.labels[tooltipItem.index];
+                        return label + "(" + longToTime(datum) + ")";
                     }
                 }
             },

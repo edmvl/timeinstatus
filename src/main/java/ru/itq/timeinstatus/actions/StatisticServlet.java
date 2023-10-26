@@ -4,7 +4,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.plugin.webresource.WebResourceManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -12,6 +11,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.itq.timeinstatus.ao.Statistic;
+import ru.itq.timeinstatus.dto.IssueDto;
 import ru.itq.timeinstatus.service.StatisticService;
 
 import javax.servlet.http.HttpServlet;
@@ -57,13 +57,19 @@ public class StatisticServlet extends HttpServlet {
         if (Objects.nonNull(issueKeys)) {
             String[] selectedIssueKeys = issueKeys.split(",");
             Statistic[] statisticForIssue = statisticService.getStatisticForIssues(selectedIssueKeys);
-            context.put("selectedIssueKeys", issueKeys);
+            context.put("selectedIssueKeys", Arrays.asList(selectedIssueKeys));
             context.put("statisticForIssue", statisticForIssue);
         }
         if (Objects.nonNull(epicKey)) {
             MutableIssue epicIssue = issueManager.getIssueObject(epicKey);
-            List<String> inwardLinks = issueLinkManager.getOutwardLinks(epicIssue.getId()).stream()
-                    .map(issueLink -> issueLink.getDestinationObject().getKey())
+            List<IssueDto> inwardLinks = issueLinkManager.getOutwardLinks(epicIssue.getId()).stream()
+                    .map(issueLink -> {
+                        Issue destinationObject = issueLink.getDestinationObject();
+                        return IssueDto.builder()
+                                .key(destinationObject.getKey())
+                                .description(destinationObject.getSummary())
+                                .build();
+                    })
                     .collect(Collectors.toList());
             context.put("selectedEpicKey", epicKey);
             context.put("inwardLinks", inwardLinks);
