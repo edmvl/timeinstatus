@@ -23,6 +23,9 @@ public class CustomStatisticField extends GenericTextCFType {
     }
 
     private static String formatTime(long milliseconds) {
+        if (milliseconds == 0) {
+            return "";
+        }
         long seconds = milliseconds / 1000;
         long d = seconds / 32400;
         long h = seconds / 3600 - d * 9;
