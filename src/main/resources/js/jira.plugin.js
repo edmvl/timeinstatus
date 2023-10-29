@@ -25,8 +25,12 @@ function getColor(index) {
 var timeSpentMap = {};
 var allSpentTime = 0;
 
-function fillTimeSpentMap() {
+function fillTimeSpentMap(selected = []) {
     $.each($(".time-in-status-stats"), function (i, e) {
+        var key = e.dataset.key;
+        if (selected && !selected.includes(key)) {
+            return;
+        }
         var state = e.dataset.state;
         var spent = parseInt(e.dataset.spent);
         allSpentTime += spent;
@@ -36,6 +40,18 @@ function fillTimeSpentMap() {
             timeSpentMap[state] = spent;
         }
     })
+}
+
+function getSelectedTableItems() {
+    return new Array(...document.querySelectorAll(".issue-selected-key"))
+        .filter(el => el.checked)
+        .map(el => el.id);
+}
+
+function rerenderChart() {
+    timeSpentMap = {};
+    fillTimeSpentMap(getSelectedTableItems());
+    renderChart();
 }
 
 function renderChart() {

@@ -5,6 +5,8 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.plugin.webresource.WebResourceManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import lombok.SneakyThrows;
@@ -28,6 +30,7 @@ public class StatisticServlet extends HttpServlet {
     private final TemplateRenderer templateRenderer;
     private final StatisticService statisticService;
     private final WebResourceManager webResourceManager;
+    private final ProjectManager projectManager = ComponentAccessor.getProjectManager();
     private final IssueManager issueManager = ComponentAccessor.getIssueManager();
     private final IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 
@@ -43,22 +46,21 @@ public class StatisticServlet extends HttpServlet {
     @SneakyThrows
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        String issueKeys = req.getParameter("issueKeys");
-        String epicKey = req.getParameter("epicKey");
-        Collection<Long> issueIdsForProject = issueManager.getIssueIdsForProject(10001L).stream()
-                .filter(aLong -> issueLinkManager.getOutwardLinks(aLong).size() > 0)
-                .collect(Collectors.toList());
-        List<Issue> issueObjects = issueManager.getIssueObjects(issueIdsForProject);
         Map<String, Object> context = new HashMap<>();
+        String epicKey = req.getParameter("epicKey");
+        String projectKey = req.getParameter("projectKey");
+        context.put("selectedProjectKey", projectKey);
+        Project projectByCurrentKeyIgnoreCase = projectManager.getProjectByCurrentKeyIgnoreCase(projectKey);
+        context.put("projectList", projectManager.getProjects().stream().map(Project::getKey));
         context.put("webResourceManager", webResourceManager);
-        context.put("issueIdsForProject", issueObjects.stream()
-                .map(Issue::getKey).collect(Collectors.toList())
-        );
-        if (Objects.nonNull(issueKeys)) {
-            String[] selectedIssueKeys = issueKeys.split(",");
-            Statistic[] statisticForIssue = statisticService.getStatisticForIssues(selectedIssueKeys);
-            context.put("selectedIssueKeys", Arrays.asList(selectedIssueKeys));
-            context.put("statisticForIssue", statisticForIssue);
+        if (Objects.nonNull(projectKey)) {
+            Collection<Long> issueIdsForProject = issueManager.getIssueIdsForProject(projectByCurrentKeyIgnoreCase.getId()).stream()
+                    .filter(aLong -> issueLinkManager.getOutwardLinks(aLong).size() > 0)
+                    .collect(Collectors.toList());
+            List<Issue> issueObjects = issueManager.getIssueObjects(issueIdsForProject);
+            context.put("issueIdsForProject", issueObjects.stream()
+                    .map(Issue::getKey).collect(Collectors.toList())
+            );
         }
         if (Objects.nonNull(epicKey)) {
             MutableIssue epicIssue = issueManager.getIssueObject(epicKey);
@@ -71,6 +73,9 @@ public class StatisticServlet extends HttpServlet {
                                 .build();
                     })
                     .collect(Collectors.toList());
+            String[] issueKeys = inwardLinks.stream().map(IssueDto::getKey).toArray(String[]::new);
+            Statistic[] statisticForIssue = statisticService.getStatisticForIssues(issueKeys);
+            context.put("statisticForIssue", statisticForIssue);
             context.put("selectedEpicKey", epicKey);
             context.put("inwardLinks", inwardLinks);
         }
