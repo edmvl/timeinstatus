@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="Time in status" author_email="adent@example.com" directory_title="Time in status"
+                 screenshot="http://labs.atlassian.com/svn/GADGETS/trunk/jira-issues/basic/jira-issues-screenshot.png"
+                 thumbnail="http://labs.atlassian.com/svn/GADGETS/trunk/jira-issues/basic/jira-issues-thumbnail.png">
+        <Require feature="minimessage" />
+        <Optional feature="dynamic-height" />
+    </ModulePrefs>
+    <UserPref name="show_date" display_name="Show Dates?" datatype="bool" default_value="true"/>
+
+    <UserPref name="show_summ" display_name="Show Summaries?" datatype="bool" default_value="true"/>
+    <UserPref name="num_entries" display_name="Number of Entries:" default_value="5"/>
+    <Content type="html">
+        <![CDATA[
+<body>
+<div class="field-group" style="margin: 8px auto 8px auto; height: 40px; display: flex">
+    <label for="checklistCreationCheckboxFieldId"
+           style="width: 180px; word-wrap: break-word; direction: rtl; margin: auto 20px auto 0"
+    >
+        Epic
+    </label>
+    <select name="issueIdsForProject" id="issueIdsForProject"
+            style="width: 700px; margin: auto 20px auto 0">
+        #foreach($epicKey in $issueIdsForProject)
+            <option
+                    value="$epicKey"
+                #if($selectedEpicKey==$epicKey)
+                    selected
+                #end
+
+            >
+                $epicKey
+            </option>
+        #end
+    </select>
+</div>
+<div class="field-group" style="margin: 8px auto 8px auto; display: flex">
+    <label for="checklistCreationCheckboxFieldId"
+           style="width: 180px; word-wrap: break-word; direction: rtl; margin: auto 20px auto 0"
+    >
+        Issue
+    </label>
+    <select name="inwardLinks" id="inwardLinks" multiple
+            style="width: 700px; margin: auto 20px auto 0">
+        #foreach($inwardLink in $inwardLinks)
+            <option
+                    value="$inwardLink.getKey()"
+                #if($selectedIssueKeys.contains($inwardLink.getKey()))
+                    selected
+                #end
+            >
+                $inwardLink.getKey() $inwardLink.getDescription()
+            </option>
+        #end
+    </select>
+</div>
+
+<div style="margin: 20px auto 20px auto; max-width: 500px; min-width: 500px; max-height: 300px; min-height: 300px; display: flex">
+    <canvas id="results-chart"></canvas>
+</div>
+
+    #foreach($statistic in $statisticForIssue)
+    <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()"
+         data-state="$statistic.getLastStateName()->$statistic.getNextStateName()"></div>
+    #end
+<script>
+    AJS.$("#issueIdsForProject").auiSelect2().on("change", function (params) {
+        var id = params["added"].id;
+        if (!id) {
+            return;
+        }
+        window.location.replace(window.location.origin + window.location.pathname + "?epicKey=" + id);
+    });
+    AJS.$("#inwardLinks").auiSelect2().on("change", function (params) {
+        var {added = {}, removed = {}} = params;
+        var addedId = added.id;
+        var removedId = removed.id;
+        if (!addedId && !removedId) {
+            return;
+        }
+        var search = window.location.search;
+        const urlParams = new URLSearchParams(search);
+        var issueKeys = urlParams.get("issueKeys");
+        var epicKey = urlParams.get("epicKey");
+        if (issueKeys) {
+            if (addedId) {
+                issueKeys = issueKeys + "," + addedId;
+            }
+            if (removedId) {
+                issueKeys = issueKeys.split(",").filter(value => value !== removedId).join(",");
+            }
+        } else {
+            issueKeys = addedId;
+        }
+        window.location.replace(window.location.origin + window.location.pathname + "?epicKey=" + epicKey + "&issueKeys=" + issueKeys);
+    });
+    fillTimeSpentMap();
+    renderChart();
+</script>
+</body>
+]]>
+    </Content>
+</Module>

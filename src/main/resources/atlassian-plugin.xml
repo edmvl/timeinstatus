@@ -2,14 +2,14 @@
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <vendor name="${project.organization.name}" url="${project.organization.url}"/>
         <param name="plugin-icon">images/pluginIcon.png</param>
         <param name="plugin-logo">images/pluginLogo.png</param>
     </plugin-info>
 
     <!-- add our i18n resource -->
     <resource type="i18n" name="i18n" location="time-in-status"/>
-    
+
     <!-- add our web resources -->
     <web-resource key="jira.plugin-resources" name="jira.plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
@@ -17,7 +17,8 @@
         <resource type="download" name="jira.plugin.js" location="/js/jira.plugin.js"/>
         <resource type="download" name="Chart.min.css" location="/css/chart/Chart.min.css"/>
         <resource type="download" name="Chart.min.js" location="/js/chart/Chart.min.js"/>
-        <resource type="download" name="chartjs-plugin-datalabels.min.js" location="/js/chart/chartjs-plugin-datalabels.min.js"/>
+        <resource type="download" name="chartjs-plugin-datalabels.min.js"
+                  location="/js/chart/chartjs-plugin-datalabels.min.js"/>
         <resource type="download" name="images/" location="/images"/>
         <context>atl.general</context>
         <context>jira.plugin</context>
@@ -32,8 +33,10 @@
         <description>Страница настройки постфункций</description>
         <function-class>ru.itq.timeinstatus.postfunction.IssueResolveFunction</function-class>
         <resource type="velocity" name="view" location="/templates/postfunction/issueresolve/function-view.vm"/>
-        <resource type="velocity" name="input-parameters" location="/templates/postfunction/issueresolve/function-edit.vm"/>
-        <resource type="velocity" name="edit-parameters" location="/templates/postfunction/issueresolve/function-edit.vm"/>
+        <resource type="velocity" name="input-parameters"
+                  location="/templates/postfunction/issueresolve/function-edit.vm"/>
+        <resource type="velocity" name="edit-parameters"
+                  location="/templates/postfunction/issueresolve/function-edit.vm"/>
     </workflow-function>
 
     <workflow-function key="time-tracking-function"
@@ -43,8 +46,10 @@
         <description>Страница настройки постфункций</description>
         <function-class>ru.itq.timeinstatus.postfunction.TimeTrackingFunction</function-class>
         <resource type="velocity" name="view" location="/templates/postfunction/function-view.vm"/>
-        <resource type="velocity" name="input-parameters" location="/templates/postfunction/timetracking/function-edit.vm"/>
-        <resource type="velocity" name="edit-parameters" location="/templates/postfunction/timetracking/function-edit.vm"/>
+        <resource type="velocity" name="input-parameters"
+                  location="/templates/postfunction/timetracking/function-edit.vm"/>
+        <resource type="velocity" name="edit-parameters"
+                  location="/templates/postfunction/timetracking/function-edit.vm"/>
     </workflow-function>
 
     <component-import key="ao" interface="com.atlassian.activeobjects.external.ActiveObjects"/>
@@ -55,7 +60,7 @@
         <entity>ru.itq.timeinstatus.ao.Statistic</entity>
     </ao>
 
-    <customfield-type name="Custom statistic field"  key="custom-statistic-customField"
+    <customfield-type name="Custom statistic field" key="custom-statistic-customField"
                       class="ru.itq.timeinstatus.customfield.CustomStatisticField">
         <description key="custom-statistic-customField">Statistic custom field</description>
         <resource name="view" type="velocity" location="/templates/statisticfield/view.vm"/>
@@ -68,12 +73,15 @@
         <resource type="velocity" name="view" location="/templates/statisticfield/viewStats.vm"/>
         <supports-ajax-load>true</supports-ajax-load>
         <context-provider class="ru.itq.timeinstatus.provider.ModelProvider"/>
-        <condition class="ru.itq.timeinstatus.conditions.ConditionTimeTracking" invert="false" />
+        <condition class="ru.itq.timeinstatus.conditions.ConditionTimeTracking" invert="false"/>
         <sortable>true</sortable>
     </web-panel>
 
     <servlet name="Statistic Servlet" key="helloWorld" class="ru.itq.timeinstatus.actions.StatisticServlet">
         <url-pattern>/statistic</url-pattern>
     </servlet>
-    <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer" />`
+    <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer"/>
+    <gadget key="unique-gadget-key" location="/gadget/gadget.xml"
+            publish-location="time-in-status/gadget.xml">
+    </gadget>
 </atlassian-plugin>
