@@ -8,4 +8,5 @@ import lombok.Data;
 public class IssueDto {
     private String key;
     private String description;
+    private String state;
 }

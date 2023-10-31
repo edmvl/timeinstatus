@@ -24,8 +24,9 @@ function getColor(index) {
 
 var timeSpentMap = {};
 var allSpentTime = 0;
+var chart = null;
 
-function fillTimeSpentMap(selected = []) {
+function fillTimeSpentMap(selected) {
     $.each($(".time-in-status-stats"), function (i, e) {
         var key = e.dataset.key;
         if (selected && !selected.includes(key)) {
@@ -48,9 +49,18 @@ function getSelectedTableItems() {
         .map(el => el.id);
 }
 
+function fillAllCheckBoxes() {
+    var checkedAll = document.querySelector("#header-check").checked;
+    new Array(...document.querySelectorAll(".issue-selected-key")).forEach(value => {
+        value.checked = checkedAll;
+    })
+    rerenderChart();
+}
+
 function rerenderChart() {
     timeSpentMap = {};
     fillTimeSpentMap(getSelectedTableItems());
+    if (chart) chart.destroy();
     renderChart();
 }
 
@@ -89,14 +99,14 @@ function initiateChart(chartData) {
         labels: chartData.labels
     };
 
-    new Chart($("#results-chart"), {
+    chart = new Chart($("#results-chart"), {
         type: 'doughnut',
         data: data,
         options: {
             legend: {
                 display: true,
                 position: "right",
-                align: "center"
+                align: "left"
             },
             tooltips: {
                 displayColors: false,

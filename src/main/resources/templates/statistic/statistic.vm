@@ -1,18 +1,25 @@
-<html lang="$i18n.getLocale().getLanguage()">
+<html>
 <head>
     <title>$i18n.getText("ru.itq.time-in-status.statistic.title")</title>
     <meta name="decorator" content="atl.general">
-    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2");
-    $webResourceManager.requireResource("com.atlassian.auiplugin:table");
+    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+    $webResourceManager.requireResource("com.atlassian.auiplugin:table")
 </head>
 <body>
 <div class="field-group" style="margin: 8px auto 8px auto; height: 40px; display: flex">
     <select name="project" id="project"
-            style="width: 700px; margin: auto 20px auto 20px">
+            style="width: 700px; margin: auto 20px auto 20px"
+            placeholder="Select a project"
+    >
+        <option
+            #if($selectedProjectKey)
+                    selected
+            #end
+        ></option>
         #foreach($project in $projectList)
             <option
                     value="$project"
-                #if($selectedProject==$project)
+                #if($selectedProjectKey==$project)
                     selected
                 #end
 
@@ -25,6 +32,12 @@
 <div class="field-group" style="margin: 8px auto 8px auto; height: 40px; display: flex">
     <select name="issueIdsForProject" id="issueIdsForProject"
             style="width: 700px; margin: auto 20px auto 20px">
+        placeholder="Select a project"
+        <option
+            #if($selectedEpicKey)
+                    selected
+            #end
+        ></option>
         #foreach($epicKey in $issueIdsForProject)
             <option
                     value="$epicKey"
@@ -38,40 +51,48 @@
         #end
     </select>
 </div>
-<div class="field-group" style="margin: 8px auto 8px auto; display: flex">
-    <table class="aui" style="width: 700px; margin: auto 20px auto 20px">
-        <thead>
-        <tr>
-            <th id="basic-number">Код</th>
-            <th id="basic-fname">Тема</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-            #foreach($inwardLink in $inwardLinks)
+    #if ($inwardLinks.size()>0)
+    <div class="field-group" style="margin: 8px auto 8px auto; display: flex">
+        <table class="aui" style="width: 700px; margin: auto 20px auto 20px">
+            <thead>
             <tr>
-                <td headers="basic-number">$inwardLink.getKey()</td>
-                <td headers="basic-fname">$inwardLink.getDescription()</td>
-                <td>
-                    <input
-                            class="issue-selected-key"
-                            type="checkbox"
-                            name="checkbox"
-                            id="$inwardLink.getKey()"
-                            onchange="rerenderChart()"
-                    >
-                </td>
+                <th id="basic-number">Код</th>
+                <th id="basic-fname">Тема</th>
+                <th id="basic-fname">Статус</th>
+                <th id="basic-fname">Затрачено</th>
+                <th><input type="checkbox" name="headerCheck" id="header-check" onclick="fillAllCheckBoxes()"></th>
             </tr>
-            #end
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                #foreach($inwardLink in $inwardLinks)
+                <tr>
+                    <td headers="basic-number">
+                        <a href="$baseUrl/browse/$inwardLink.getKey()">$inwardLink.getKey()</a>
+                    </td>
+                    <td headers="basic-fname">$inwardLink.getSummary()</td>
+                    <td headers="basic-fname">$inwardLink.getStatus().getSimpleStatus().getName()</td>
+                    <td headers="basic-fname">$timeFormatter.formatTime($timeSpentMap.get($inwardLink.getKey()))</td>
+                    <td>
+                        <input
+                                class="issue-selected-key"
+                                type="checkbox"
+                                name="checkbox"
+                                id="$inwardLink.getKey()"
+                                onchange="rerenderChart()"
+                        >
+                    </td>
+                </tr>
+                #end
+            </tbody>
+        </table>
+    </div>
+    #end
     #foreach($statistic in $statisticForIssue)
     <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()"
          data-key="$statistic.getIssueKey()"
          data-state="$statistic.getLastStateName()->$statistic.getNextStateName()"></div>
     #end
-<div style="width: 500px; height: 300px; position: absolute; left: 720px; top: 20px">
+<div style="width: 500px; height: 600px; position: absolute; left: 720px; top: 20px; margin: 20px auto 20px auto">
     <canvas id="results-chart"></canvas>
 </div>
 

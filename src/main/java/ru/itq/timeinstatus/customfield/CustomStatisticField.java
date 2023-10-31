@@ -8,6 +8,7 @@ import com.atlassian.jira.issue.fields.CustomField;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.itq.timeinstatus.ao.Statistic;
 import ru.itq.timeinstatus.service.StatisticService;
+import ru.itq.timeinstatus.utils.TimeFormatter;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -22,28 +23,13 @@ public class CustomStatisticField extends GenericTextCFType {
         this.statisticService = statisticService;
     }
 
-    private static String formatTime(long milliseconds) {
-        if (milliseconds == 0) {
-            return "";
-        }
-        long seconds = milliseconds / 1000;
-        long d = seconds / 32400;
-        long h = seconds / 3600 - d * 9;
-        long m = (seconds % 3600) / 60;
-        return addLeadingZero(d) + ":" + addLeadingZero(h) + ":" + addLeadingZero(m);
-    }
-
-    private static String addLeadingZero(long d) {
-        return d > 9 ? "" + d : "0" + d;
-    }
-
 
     @Nullable
     @Override
     public String getValueFromIssue(CustomField field, Issue issue) {
         String fieldName = field.getFieldName();
         Statistic[] statisticForIssue = statisticService.getStatisticForIssue(issue);
-        return formatTime(Arrays.stream(statisticForIssue)
+        return TimeFormatter.formatTime(Arrays.stream(statisticForIssue)
                 .filter(
                         s -> fieldName.equals(s.getLastStateName() + "-&gt;" + s.getNextStateName())
                 )

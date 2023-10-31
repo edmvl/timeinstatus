@@ -60,7 +60,7 @@
         <entity>ru.itq.timeinstatus.ao.Statistic</entity>
     </ao>
 
-    <customfield-type name="Custom statistic field" key="custom-statistic-customField"
+    <customfield-type name="Time In Status statistic field" key="custom-statistic-customField"
                       class="ru.itq.timeinstatus.customfield.CustomStatisticField">
         <description key="custom-statistic-customField">Statistic custom field</description>
         <resource name="view" type="velocity" location="/templates/statisticfield/view.vm"/>
@@ -84,4 +84,9 @@
     <gadget key="unique-gadget-key" location="/gadget/gadget.xml"
             publish-location="time-in-status/gadget.xml">
     </gadget>
+    <web-item key="stats servlet" name="Time In Status" section="system.top.navigation.bar" weight="10">
+        <description key="item.time.in.status.desc">Time In Status. Статистика по задачам</description>
+        <label key="item.time.in.status.label">Статистика по задачам</label>
+        <link linkId="time_in_status_link">/plugins/servlet/statistic</link>
+    </web-item>
 </atlassian-plugin>

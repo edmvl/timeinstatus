@@ -4,6 +4,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
@@ -13,8 +14,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.itq.timeinstatus.ao.Statistic;
-import ru.itq.timeinstatus.dto.IssueDto;
 import ru.itq.timeinstatus.service.StatisticService;
+import ru.itq.timeinstatus.utils.TimeFormatter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,8 @@ public class StatisticServlet extends HttpServlet {
         Map<String, Object> context = new HashMap<>();
         String epicKey = req.getParameter("epicKey");
         String projectKey = req.getParameter("projectKey");
+        String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
+        context.put("baseUrl", baseUrl);
         context.put("selectedProjectKey", projectKey);
         Project projectByCurrentKeyIgnoreCase = projectManager.getProjectByCurrentKeyIgnoreCase(projectKey);
         context.put("projectList", projectManager.getProjects().stream().map(Project::getKey));
@@ -58,23 +61,22 @@ public class StatisticServlet extends HttpServlet {
                     .filter(aLong -> issueLinkManager.getOutwardLinks(aLong).size() > 0)
                     .collect(Collectors.toList());
             List<Issue> issueObjects = issueManager.getIssueObjects(issueIdsForProject);
-            context.put("issueIdsForProject", issueObjects.stream()
-                    .map(Issue::getKey).collect(Collectors.toList())
-            );
+            context.put("issueIdsForProject", issueObjects.stream().map(Issue::getKey).collect(Collectors.toList()));
         }
         if (Objects.nonNull(epicKey)) {
             MutableIssue epicIssue = issueManager.getIssueObject(epicKey);
-            List<IssueDto> inwardLinks = issueLinkManager.getOutwardLinks(epicIssue.getId()).stream()
-                    .map(issueLink -> {
-                        Issue destinationObject = issueLink.getDestinationObject();
-                        return IssueDto.builder()
-                                .key(destinationObject.getKey())
-                                .description(destinationObject.getSummary())
-                                .build();
-                    })
+            List<Issue> inwardLinks = issueLinkManager.getOutwardLinks(epicIssue.getId()).stream()
+                    .map(IssueLink::getDestinationObject)
                     .collect(Collectors.toList());
-            String[] issueKeys = inwardLinks.stream().map(IssueDto::getKey).toArray(String[]::new);
+            String[] issueKeys = inwardLinks.stream().map(Issue::getKey).toArray(String[]::new);
             Statistic[] statisticForIssue = statisticService.getStatisticForIssues(issueKeys);
+            Map<String, Long> timeSpentMap = Arrays.stream(statisticForIssue).collect(Collectors.toMap(
+                    Statistic::getIssueKey,
+                    Statistic::getTimeSpent,
+                    Long::sum
+            ));
+            context.put("timeSpentMap", timeSpentMap);
+            context.put("timeFormatter", new TimeFormatter());
             context.put("statisticForIssue", statisticForIssue);
             context.put("selectedEpicKey", epicKey);
             context.put("inwardLinks", inwardLinks);
