@@ -12,14 +12,21 @@ import com.atlassian.plugin.webresource.WebResourceManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 import ru.itq.timeinstatus.ao.Statistic;
+import ru.itq.timeinstatus.service.ExcelGeneratorService;
 import ru.itq.timeinstatus.service.StatisticService;
 import ru.itq.timeinstatus.utils.TimeFormatter;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +37,7 @@ public class StatisticServlet extends HttpServlet {
 
     private final TemplateRenderer templateRenderer;
     private final StatisticService statisticService;
+    private final ExcelGeneratorService excelGeneratorService;
     private final WebResourceManager webResourceManager;
     private final ProjectManager projectManager = ComponentAccessor.getProjectManager();
     private final IssueManager issueManager = ComponentAccessor.getIssueManager();
@@ -37,10 +45,12 @@ public class StatisticServlet extends HttpServlet {
 
 
     public StatisticServlet(
-            TemplateRenderer templateRenderer, StatisticService statisticService, WebResourceManager webResourceManager
+            TemplateRenderer templateRenderer, StatisticService statisticService, ExcelGeneratorService excelGeneratorService,
+            WebResourceManager webResourceManager
     ) {
         this.templateRenderer = templateRenderer;
         this.statisticService = statisticService;
+        this.excelGeneratorService = excelGeneratorService;
         this.webResourceManager = webResourceManager;
     }
 
@@ -49,6 +59,7 @@ public class StatisticServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         Map<String, Object> context = new HashMap<>();
         String epicKey = req.getParameter("epicKey");
+        String issueIds = req.getParameter("issueIds");
         String projectKey = req.getParameter("projectKey");
         String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
         context.put("baseUrl", baseUrl);
@@ -56,6 +67,14 @@ public class StatisticServlet extends HttpServlet {
         Project projectByCurrentKeyIgnoreCase = projectManager.getProjectByCurrentKeyIgnoreCase(projectKey);
         context.put("projectList", projectManager.getProjects().stream().map(Project::getKey));
         context.put("webResourceManager", webResourceManager);
+        if (Objects.nonNull(issueIds)) {
+            List<Long> issueIdList = Arrays.stream(issueIds.split(",")).map(Long::valueOf).collect(Collectors.toList());
+            ServletOutputStream outputStream = resp.getOutputStream();
+            excelGeneratorService.generate(issueIdList, outputStream);
+            resp.addHeader("Content-Disposition", "attachment; filename=\"report" + LocalDateTime.now() + ".xlsx\"");
+            resp.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            return;
+        }
         if (Objects.nonNull(projectKey)) {
             Collection<Long> issueIdsForProject = issueManager.getIssueIdsForProject(projectByCurrentKeyIgnoreCase.getId()).stream()
                     .filter(aLong -> issueLinkManager.getOutwardLinks(aLong).size() > 0)
