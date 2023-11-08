@@ -1,16 +1,11 @@
 package ru.itq.timeinstatus.service;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.security.JiraAuthenticationContext;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import lombok.extern.slf4j.Slf4j;
 import net.java.ao.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.itq.timeinstatus.ao.Statistic;
 import ru.itq.timeinstatus.utils.WorkingDayUtils;
@@ -27,6 +22,7 @@ import java.util.stream.Collectors;
 public class StatisticService {
     private final ActiveObjects ao;
 
+    @Autowired
     public StatisticService(
             @ComponentImport ActiveObjects ao
     ) {
@@ -40,10 +36,10 @@ public class StatisticService {
         Statistic history = ao.create(Statistic.class);
         history.setProjectId(projectId);
         history.setIssueKey(issueKey);
-        history.setLastStateName(lastStateName);
-        history.setLastStateTime(Objects.nonNull(lastStateTime) ? lastStateTime.toString() : null);
-        history.setNextStateName(nextStateName);
-        history.setNextStateTime(Objects.nonNull(nextStateTime) ? nextStateTime.toString() : null);
+        history.setLastState(lastStateName);
+        history.setLastTime(Objects.nonNull(lastStateTime) ? lastStateTime.toString() : null);
+        history.setNextState(nextStateName);
+        history.setNextTime(Objects.nonNull(nextStateTime) ? nextStateTime.toString() : null);
         history.setTimeSpent(getTimeSpent(lastStateTime, nextStateTime));
         history.save();
     }
@@ -62,7 +58,7 @@ public class StatisticService {
 
     public Statistic[] getStatisticForIssues(String[] issueIds) {
         String ph = Arrays.stream(issueIds).map(s -> "?").collect(Collectors.joining(","));
-        Query query = Query.select().where("ISSUE_KEY IN ("+ ph + ")", issueIds);
+        Query query = Query.select().where("ISSUE_KEY IN (" + ph + ")", issueIds);
         return ao.find(Statistic.class, query);
     }
 

@@ -88,7 +88,9 @@
         </table>
     </div>
     #end
+<div style="margin: 8px auto 8px auto;">
     <button class="aui-button aui-button-primary" onclick="loadExcel()">Выгрузить в Excel</button>
+</div>
     #foreach($statistic in $statisticForIssue)
     <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()"
          data-key="$statistic.getIssueKey()"

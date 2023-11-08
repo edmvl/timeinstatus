@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import ru.itq.timeinstatus.ao.Statistic;
@@ -22,9 +23,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ExcelGeneratorService {
-    private final StatisticService statisticService;
+    private StatisticService statisticService;
     private final IssueManager issueManager = ComponentAccessor.getIssueManager();
 
+    @Autowired
     public ExcelGeneratorService(StatisticService statisticService) {
         this.statisticService = statisticService;
     }
@@ -48,7 +50,7 @@ public class ExcelGeneratorService {
                                 if (Objects.isNull(statistic)) {
                                     return stringLongHashMap;
                                 }
-                                stringLongHashMap.put(statistic.getLastStateTime() + "->" + statistic.getNextStateName(), statistic.getTimeSpent());
+                                stringLongHashMap.put(statistic.getLastTime() + "->" + statistic.getNextState(), statistic.getTimeSpent());
                                 return stringLongHashMap;
                             })
                             .collect(Collectors.toList());
