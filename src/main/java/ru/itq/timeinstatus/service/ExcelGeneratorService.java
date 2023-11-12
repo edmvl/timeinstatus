@@ -14,6 +14,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import ru.itq.timeinstatus.ao.Statistic;
 import ru.itq.timeinstatus.dto.IssueReportsDto;
+import ru.itq.timeinstatus.utils.TimeFormatter;
 
 import java.io.ByteArrayOutputStream;
 import java.util.*;
@@ -72,10 +73,15 @@ public class ExcelGeneratorService {
             IssueReportsDto issueReportsDto = collectReportData.get(i);
             XSSFRow row = sheet.createRow(i);
             Issue issue = issueReportsDto.getIssue();
+            List<HashMap<String, Long>> transitionsSpent = issueReportsDto.getTransitionsSpent();
             if (Objects.nonNull(issue)) {
+                long sum = transitionsSpent.stream().map(
+                        m -> m.values().stream().mapToLong(value -> value).sum()
+                ).mapToLong(v -> v).sum();
                 setCellValue(row, 0, issue.getKey());
                 setCellValue(row, 1, issue.getSummary());
                 setCellValue(row, 2, issue.getStatus().getName());
+                setCellValue(row, 3, TimeFormatter.formatTime(sum));
             }
         }
         wb.write(outputStream);
