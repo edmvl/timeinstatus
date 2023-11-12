@@ -94,7 +94,7 @@
     #foreach($statistic in $statisticForIssue)
     <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()"
          data-key="$statistic.getIssueKey()"
-         data-state="$statistic.getLastStateName()->$statistic.getNextStateName()"></div>
+         data-state="$statistic.getLastState()->$statistic.getNextState()"></div>
     #end
 <div style="width: 500px; height: 600px; position: absolute; left: 720px; top: 20px; margin: 20px auto 20px auto">
     <canvas id="results-chart"></canvas>
