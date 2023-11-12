@@ -58,7 +58,6 @@ public class StatisticServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         Map<String, Object> context = new HashMap<>();
         String epicKey = req.getParameter("epicKey");
-        String issueIds = req.getParameter("issueIds");
         String projectKey = req.getParameter("projectKey");
         String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
         context.put("baseUrl", baseUrl);
@@ -66,14 +65,6 @@ public class StatisticServlet extends HttpServlet {
         Project projectByCurrentKeyIgnoreCase = projectManager.getProjectByCurrentKeyIgnoreCase(projectKey);
         context.put("projectList", projectManager.getProjects().stream().map(Project::getKey));
         context.put("webResourceManager", webResourceManager);
-        if (Objects.nonNull(issueIds)) {
-            List<Long> issueIdList = Arrays.stream(issueIds.split(",")).map(Long::valueOf).collect(Collectors.toList());
-            ServletOutputStream outputStream = resp.getOutputStream();
-            excelGeneratorService.generate(issueIdList, outputStream);
-            resp.addHeader("Content-Disposition", "attachment; filename=\"report" + LocalDateTime.now() + ".xlsx\"");
-            resp.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            return;
-        }
         if (Objects.nonNull(projectKey)) {
             Collection<Long> issueIdsForProject = issueManager.getIssueIdsForProject(projectByCurrentKeyIgnoreCase.getId()).stream()
                     .filter(aLong -> issueLinkManager.getOutwardLinks(aLong).size() > 0)

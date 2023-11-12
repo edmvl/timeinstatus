@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import ru.itq.timeinstatus.ao.Statistic;
 import ru.itq.timeinstatus.dto.IssueReportsDto;
 
-import javax.servlet.ServletOutputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,28 +63,23 @@ public class ExcelGeneratorService {
     }
 
     @SneakyThrows
-    public void generate(List<Long> issueIdList, ServletOutputStream outputStream) {
+    public ByteArrayOutputStream generate(List<Long> issueIdList) {
         XSSFWorkbook wb = new XSSFWorkbook(new ClassPathResource("template.xlsx").getInputStream());
-        try (FileOutputStream fileOut = new FileOutputStream("new.xlsx")) {
-            List<IssueReportsDto> collectReportData = collectReportData(issueIdList);
-            XSSFSheet sheet1 = wb.getSheetAt(0);
-            for (int i = 0; i < collectReportData.size(); i++) {
-                IssueReportsDto issueReportsDto = collectReportData.get(i);
-                XSSFRow row = sheet1.createRow(i);
-                try {
-                    Issue issue = issueReportsDto.getIssue();
-                    if (Objects.nonNull(issue)) {
-                        setCellValue(row, 0, issue.getKey());
-                        setCellValue(row, 1, issue.getSummary());
-                        setCellValue(row, 2, issue.getStatus().getName());
-                    }
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
+        List<IssueReportsDto> collectReportData = collectReportData(issueIdList);
+        XSSFSheet sheet = wb.getSheetAt(0);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        for (int i = 0; i < collectReportData.size(); i++) {
+            IssueReportsDto issueReportsDto = collectReportData.get(i);
+            XSSFRow row = sheet.createRow(i);
+            Issue issue = issueReportsDto.getIssue();
+            if (Objects.nonNull(issue)) {
+                setCellValue(row, 0, issue.getKey());
+                setCellValue(row, 1, issue.getSummary());
+                setCellValue(row, 2, issue.getStatus().getName());
             }
-            wb.write(fileOut);
-            wb.write(outputStream);
         }
+        wb.write(outputStream);
+        return outputStream;
     }
 
     private void setCellValue(XSSFRow row, Integer index, String value) {

@@ -78,4 +78,7 @@
         <label key="item.time.in.status.label">Статистика по задачам</label>
         <link linkId="time_in_status_link">/plugins/servlet/statistic</link>
     </web-item>
+    <rest name="Excel Controller" i18n-name-key="excel-controller.name" key="excel-controller" path="time-in-status" version="1.0">
+        <description key="excel-controller.description">The Excel Controller</description>
+    </rest>
 </atlassian-plugin>

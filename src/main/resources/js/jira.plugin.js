@@ -57,9 +57,9 @@ function getSelectedIssueIds() {
 }
 
 function loadExcel() {
-    var url = window.location.origin + window.location.pathname;
+    var url = AJS.contextPath() + "/rest/time-in-status/1.0/excel/download";
     url += "?issueIds=" + getSelectedIssueIds().join(",");
-    window.open( url, "_blank");
+    window.open(url, "_blank");
 }
 
 function fillAllCheckBoxes() {
