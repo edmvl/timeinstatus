@@ -25,6 +25,7 @@ function getColor(index) {
 var timeSpentMap = {};
 var allSpentTime = 0;
 var chart = null;
+var issueIds = {};
 
 function fillTimeSpentMap(selected) {
     $.each($(".time-in-status-stats"), function (i, e) {
@@ -47,6 +48,18 @@ function getSelectedTableItems() {
     return new Array(...document.querySelectorAll(".issue-selected-key"))
         .filter(el => el.checked)
         .map(el => el.id);
+}
+
+function getSelectedIssueIds() {
+    return new Array(...document.querySelectorAll(".issue-selected-key"))
+        .filter(el => el.checked)
+        .map(el => el.dataset.issueid);
+}
+
+function loadExcel() {
+    var url = AJS.contextPath() + "/rest/time-in-status/1.0/excel/download";
+    url += "?issueIds=" + getSelectedIssueIds().join(",");
+    window.open(url, "_blank");
 }
 
 function fillAllCheckBoxes() {

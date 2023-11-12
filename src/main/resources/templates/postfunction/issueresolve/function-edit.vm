@@ -8,7 +8,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
     <select name="issueResolveHistoryFieldId" id="issueResolveHistoryFieldId"
             style="width: 700px; margin: auto 20px auto 0">
         #foreach($issueResolveHistoryField in $issueResolveHistoryFields)
-            <option value="$issueResolveHistoryField.get()"
+            <option value="$issueResolveHistoryField.getKey()"
                 #if($issueResolveHistoryFieldIdSelected==$issueResolveHistoryField.getKey())
                     selected
                 #end

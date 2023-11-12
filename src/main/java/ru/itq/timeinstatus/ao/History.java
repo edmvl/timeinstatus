@@ -13,9 +13,9 @@ public interface History extends Entity {
     String getFieldId();
     void setFieldId(String fieldId);
 
-    String getFieldOldValue();
-    void setFieldOldValue(String fieldValue);
+    String getOldValue();
+    void setOldValue(String fieldValue);
 
-    String getFieldNewValue();
-    void setFieldNewValue(String fieldValue);
+    String getNewValue();
+    void setNewValue(String fieldValue);
 }

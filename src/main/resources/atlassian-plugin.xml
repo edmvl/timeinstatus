@@ -45,7 +45,7 @@
                        i18n-name-key="time-tracking-function-config-page.name">
         <description>Страница настройки постфункций</description>
         <function-class>ru.itq.timeinstatus.postfunction.TimeTrackingFunction</function-class>
-        <resource type="velocity" name="view" location="/templates/postfunction/function-view.vm"/>
+        <resource type="velocity" name="view" location="/templates/postfunction/timetracking/function-view.vm"/>
         <resource type="velocity" name="input-parameters"
                   location="/templates/postfunction/timetracking/function-edit.vm"/>
         <resource type="velocity" name="edit-parameters"
@@ -66,17 +66,6 @@
         <resource name="view" type="velocity" location="/templates/statisticfield/view.vm"/>
     </customfield-type>
 
-    <web-panel name="Web Panel Forms" i18n-name-key="web-panel-form.name" key="web-panel-form"
-               location="atl.jira.view.issue.left.context" height="200" weight="200"
-    >
-        <description key="web-panel-form.description">Web Panel Forms</description>
-        <resource type="velocity" name="view" location="/templates/statisticfield/viewStats.vm"/>
-        <supports-ajax-load>true</supports-ajax-load>
-        <context-provider class="ru.itq.timeinstatus.provider.ModelProvider"/>
-        <condition class="ru.itq.timeinstatus.conditions.ConditionTimeTracking" invert="false"/>
-        <sortable>true</sortable>
-    </web-panel>
-
     <servlet name="Statistic Servlet" key="helloWorld" class="ru.itq.timeinstatus.actions.StatisticServlet">
         <url-pattern>/statistic</url-pattern>
     </servlet>
@@ -89,4 +78,7 @@
         <label key="item.time.in.status.label">Статистика по задачам</label>
         <link linkId="time_in_status_link">/plugins/servlet/statistic</link>
     </web-item>
+    <rest name="Excel Controller" i18n-name-key="excel-controller.name" key="excel-controller" path="time-in-status" version="1.0">
+        <description key="excel-controller.description">The Excel Controller</description>
+    </rest>
 </atlassian-plugin>

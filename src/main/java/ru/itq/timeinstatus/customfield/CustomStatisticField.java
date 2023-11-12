@@ -31,7 +31,7 @@ public class CustomStatisticField extends GenericTextCFType {
         Statistic[] statisticForIssue = statisticService.getStatisticForIssue(issue);
         return TimeFormatter.formatTime(Arrays.stream(statisticForIssue)
                 .filter(
-                        s -> fieldName.equals(s.getLastStateName() + "-&gt;" + s.getNextStateName())
+                        s -> fieldName.equals(s.getLastState() + "-&gt;" + s.getNextState())
                 )
                 .map(Statistic::getTimeSpent)
                 .reduce(0L, Long::sum));

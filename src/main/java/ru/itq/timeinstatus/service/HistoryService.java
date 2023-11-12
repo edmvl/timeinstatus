@@ -3,10 +3,10 @@ package ru.itq.timeinstatus.service;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.itq.timeinstatus.ao.History;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 @Slf4j
@@ -14,6 +14,7 @@ import java.util.Objects;
 public class HistoryService {
     private final ActiveObjects ao;
 
+    @Autowired
     public HistoryService(@ComponentImport ActiveObjects ao) {
         this.ao = ao;
     }
@@ -23,8 +24,8 @@ public class HistoryService {
         history.setProjectId(projectId);
         history.setIssueKey(issueKey);
         history.setFieldId(issueResolveFieldId);
-        history.setFieldOldValue(Objects.nonNull(fieldOldValue) ? fieldOldValue.toString() : null);
-        history.setFieldNewValue(Objects.nonNull(fieldNewValue) ? fieldNewValue.toString() : null);
+        history.setOldValue(Objects.nonNull(fieldOldValue) ? fieldOldValue.toString() : null);
+        history.setNewValue(Objects.nonNull(fieldNewValue) ? fieldNewValue.toString() : null);
         history.save();
     }
 }

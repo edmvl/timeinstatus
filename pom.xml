@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.itq</groupId>
     <artifactId>timeinstatus</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.3</version>
 
     <organization>
         <name>edmvl</name>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.6.RELEASE</version>
+            <version>4.1.6.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -91,11 +91,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
-        </dependency>
-        <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
             <artifactId>atlassian-template-renderer-api</artifactId>
             <version>2.0.0</version>
@@ -106,6 +101,23 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.8.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${apache.poi.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${apache.poi.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.4</version>
         </dependency>
     </dependencies>
 
@@ -123,20 +135,14 @@
                     <instructions>
                         <Export-Package/>
                         <Import-Package>
-                            org.springframework.osgi.*;resolution:="optional",
-                            org.eclipse.gemini.blueprint.*;resolution:="optional",
+                            org.ecipse.gemini.blueprint.*;resolution:="optional",
                             javax.ws.rs*;version="[1,2)",
+                            javax.xml.parsers.*,
                             javax.xml.bind*;version="[2.1,3)",
                             *;version="0";resolution:=optional,
-                            com.atlassian.jira.imports.project.customfield;resolution:=optional,
-                            com.atlassian.jira.issue.fields.rest;resolution:=optional,
-                            com.atlassian.jira.web.util;resolution:=optional,
-                            com.atlassian.jira.web;resolution:=optional,
-                            com.atlassian.jira.action;resolution:=optional,
-                            com.atlassian.jira.util;resolution:=optional,
-                            webwork/action;resolution:=optional,
                             *
                         </Import-Package>
+                        <Atlassian-Scan-Folders>META-INF/plugin-descriptors</Atlassian-Scan-Folders>
                         <Spring-Context>*</Spring-Context>
                     </instructions>
                 </configuration>
@@ -161,7 +167,7 @@
     </build>
 
     <properties>
-        <jira.version>8.13.0</jira.version>
+        <jira.version>7.1.10</jira.version>
         <amps.version>8.0.2</amps.version>
         <plugin.testrunner.version>2.0.2</plugin.testrunner.version>
         <atlassian.spring.scanner.version>2.1.7</atlassian.spring.scanner.version>
@@ -170,6 +176,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <apache.poi.version>3.17</apache.poi.version>
     </properties>
 
 </project>

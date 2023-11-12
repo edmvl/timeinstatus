@@ -14,12 +14,15 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.itq.timeinstatus.ao.Statistic;
+import ru.itq.timeinstatus.service.ExcelGeneratorService;
 import ru.itq.timeinstatus.service.StatisticService;
 import ru.itq.timeinstatus.utils.TimeFormatter;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,20 +31,26 @@ import java.util.stream.Collectors;
 @Component
 public class StatisticServlet extends HttpServlet {
 
-    private final TemplateRenderer templateRenderer;
-    private final StatisticService statisticService;
-    private final WebResourceManager webResourceManager;
+    private TemplateRenderer templateRenderer;
+    private StatisticService statisticService;
+    private ExcelGeneratorService excelGeneratorService;
+    private WebResourceManager webResourceManager;
     private final ProjectManager projectManager = ComponentAccessor.getProjectManager();
     private final IssueManager issueManager = ComponentAccessor.getIssueManager();
     private final IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 
 
     public StatisticServlet(
-            TemplateRenderer templateRenderer, StatisticService statisticService, WebResourceManager webResourceManager
+            TemplateRenderer templateRenderer, StatisticService statisticService, ExcelGeneratorService excelGeneratorService,
+            WebResourceManager webResourceManager
     ) {
         this.templateRenderer = templateRenderer;
         this.statisticService = statisticService;
+        this.excelGeneratorService = excelGeneratorService;
         this.webResourceManager = webResourceManager;
+    }
+
+    private StatisticServlet() {
     }
 
     @SneakyThrows
