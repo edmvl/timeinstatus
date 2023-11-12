@@ -67,7 +67,7 @@
                 #foreach($inwardLink in $inwardLinks)
                 <tr>
                     <td headers="basic-number">
-                        <a href="$baseUrl/browse/$inwardLink.getKey()">$inwardLink.getKey()</a>
+                        <a href="$baseUrl/browse/$inwardLink.getKey()" target="_blank">$inwardLink.getKey()</a>
                     </td>
                     <td headers="basic-fname">$inwardLink.getSummary()</td>
                     <td headers="basic-fname">$inwardLink.getStatus().getSimpleStatus().getName()</td>
@@ -88,8 +88,10 @@
         </table>
     </div>
     #end
-<div style="margin: 8px auto 8px auto;">
-    <button class="aui-button aui-button-primary" onclick="loadExcel()">Выгрузить в Excel</button>
+<div style="padding-left: 20px">
+    <div style="margin: 8px auto 8px auto; display: flex">
+        <button class="aui-button aui-button-primary" onclick="loadExcel()">Выгрузить в Excel</button>
+    </div>
 </div>
     #foreach($statistic in $statisticForIssue)
     <div class="time-in-status-stats" style="display: none" data-spent="$statistic.getTimeSpent()"
