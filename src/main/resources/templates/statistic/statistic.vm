@@ -12,7 +12,7 @@
             placeholder="Select a project"
     >
         <option
-            #if($selectedProjectKey)
+            #if(!$selectedProjectKey)
                     selected
             #end
         ></option>
@@ -35,7 +35,7 @@
             placeholder="Select an issue id"
     >
         <option
-            #if($selectedEpicKey)
+            #if(!$selectedEpicKey)
                     selected
             #end
         ></option>
@@ -60,7 +60,7 @@
     >
         <option
                 value=""
-            #if($selectedIssueType)
+            #if(!$selectedIssueType)
                 selected
             #end
         >
