@@ -5,10 +5,11 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.model.StylesTable;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import ru.itq.timeinstatus.dto.IssueReportsDto;
 import ru.itq.timeinstatus.utils.TimeFormatter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,9 +28,16 @@ public class ExcelGeneratorService {
     private StatisticService statisticService;
     private final IssueManager issueManager = ComponentAccessor.getIssueManager();
 
+    private XSSFWorkbook wb;
+
     @Autowired
     public ExcelGeneratorService(StatisticService statisticService) {
         this.statisticService = statisticService;
+        try {
+            this.wb = new XSSFWorkbook(new ClassPathResource("template.xlsx").getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<IssueReportsDto> collectReportData(List<Long> issueIdList) {
@@ -42,7 +51,12 @@ public class ExcelGeneratorService {
                     String issueKey = issue.getKey();
                     List<Statistic> statistics = groupedByIssueKey.get(issueKey);
                     if (Objects.isNull(statistics)) {
-                        return null;
+                        return IssueReportsDto.builder()
+                                .key(issueKey)
+                                .issue(issue)
+                                .transitionsSpent(null)
+                                .build();
+
                     }
                     List<HashMap<String, Long>> transitionsSpent = statistics.stream()
                             .map(statistic -> {
@@ -50,7 +64,7 @@ public class ExcelGeneratorService {
                                 if (Objects.isNull(statistic)) {
                                     return stringLongHashMap;
                                 }
-                                stringLongHashMap.put(statistic.getLastTime() + "->" + statistic.getNextState(), statistic.getTimeSpent());
+                                stringLongHashMap.put(statistic.getLastState() + "->" + statistic.getNextState(), statistic.getTimeSpent());
                                 return stringLongHashMap;
                             })
                             .collect(Collectors.toList());
@@ -65,17 +79,17 @@ public class ExcelGeneratorService {
 
     @SneakyThrows
     public ByteArrayOutputStream generate(List<Long> issueIdList) {
-        XSSFWorkbook wb = new XSSFWorkbook(new ClassPathResource("template.xlsx").getInputStream());
         List<IssueReportsDto> collectReportData = collectReportData(issueIdList);
         XSSFSheet sheet = wb.getSheetAt(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (int i = 0; i < collectReportData.size(); i++) {
             IssueReportsDto issueReportsDto = collectReportData.get(i);
-            XSSFRow row = sheet.createRow(i);
             Issue issue = issueReportsDto.getIssue();
+            XSSFRow row = sheet.createRow(i + 1);
             List<HashMap<String, Long>> transitionsSpent = issueReportsDto.getTransitionsSpent();
             if (Objects.nonNull(issue)) {
-                long sum = transitionsSpent.stream().map(
+                createIssueSheet(wb, issue, transitionsSpent);
+                long sum = Objects.isNull(transitionsSpent) ? 0 : transitionsSpent.stream().map(
                         m -> m.values().stream().mapToLong(value -> value).sum()
                 ).mapToLong(v -> v).sum();
                 setCellValue(row, 0, issue.getKey());
@@ -86,6 +100,23 @@ public class ExcelGeneratorService {
         }
         wb.write(outputStream);
         return outputStream;
+    }
+
+    private void createIssueSheet(XSSFWorkbook wb, Issue issue, List<HashMap<String, Long>> transitionsSpent) {
+        XSSFSheet sheet = wb.getSheet(issue.getKey());
+        XSSFSheet issueSheet = Objects.nonNull(sheet) ? sheet : wb.createSheet(issue.getKey());
+        if (Objects.isNull(transitionsSpent)){
+            return;
+        }
+        int lastRowNum = issueSheet.getLastRowNum();
+        for (int j = 0; j < transitionsSpent.size(); j++) {
+            HashMap<String, Long> data = transitionsSpent.get(j);
+            XSSFRow row = issueSheet.createRow(lastRowNum + j);
+            data.keySet().forEach(s -> {
+                setCellValue(row, 0, s);
+                setCellValue(row, 1, TimeFormatter.formatTime(data.get(s)));
+            });
+        }
     }
 
     private void setCellValue(XSSFRow row, Integer index, String value) {
