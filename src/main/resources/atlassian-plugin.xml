@@ -65,6 +65,16 @@
         <description key="custom-statistic-customField">Statistic custom field</description>
         <resource name="view" type="velocity" location="/templates/statisticfield/view.vm"/>
     </customfield-type>
+    <web-panel name="Web Panel Forms" i18n-name-key="web-panel-form.name" key="web-panel-form"
+               location="atl.jira.view.issue.right.context" height="200" weight="200"
+    >
+        <description key="web-panel-form.description">Web Panel Forms</description>
+        <resource type="velocity" name="view" location="/templates/historyField/history.vm"/>
+        <supports-ajax-load>true</supports-ajax-load>
+        <context-provider class="ru.itq.timeinstatus.provider.ModelProvider"/>
+        <condition class="ru.itq.timeinstatus.conditions.ConditionTimeTracking" invert="false"/>
+        <sortable>true</sortable>
+    </web-panel>
 
     <servlet name="Statistic Servlet" key="helloWorld" class="ru.itq.timeinstatus.actions.StatisticServlet">
         <url-pattern>/statistic</url-pattern>

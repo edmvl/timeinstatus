@@ -1,0 +1,6 @@
+#foreach($history in $historyForIssue.entrySet())
+<strong>$history.getKey() : </strong>
+    #foreach($values in $history.getValue())
+        <div>$values.getValue()</div>
+    #end
+#end
