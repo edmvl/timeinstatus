@@ -28,16 +28,10 @@ public class ExcelGeneratorService {
     private StatisticService statisticService;
     private final IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-    private XSSFWorkbook wb;
-
     @Autowired
     public ExcelGeneratorService(StatisticService statisticService) {
         this.statisticService = statisticService;
-        try {
-            this.wb = new XSSFWorkbook(new ClassPathResource("template.xlsx").getInputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     private List<IssueReportsDto> collectReportData(List<Long> issueIdList) {
@@ -79,6 +73,7 @@ public class ExcelGeneratorService {
 
     @SneakyThrows
     public ByteArrayOutputStream generate(List<Long> issueIdList) {
+        XSSFWorkbook wb = new XSSFWorkbook(new ClassPathResource("template.xlsx").getInputStream());
         List<IssueReportsDto> collectReportData = collectReportData(issueIdList);
         XSSFSheet sheet = wb.getSheetAt(0);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

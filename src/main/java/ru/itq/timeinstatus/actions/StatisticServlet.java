@@ -2,6 +2,7 @@ package ru.itq.timeinstatus.actions;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueConstant;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -59,6 +60,7 @@ public class StatisticServlet extends HttpServlet {
         Map<String, Object> context = new HashMap<>();
         String epicKey = req.getParameter("epicKey");
         String projectKey = req.getParameter("projectKey");
+        String selectedIssueType = req.getParameter("issueType");
         String baseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl");
         context.put("baseUrl", baseUrl);
         context.put("selectedProjectKey", projectKey);
@@ -74,10 +76,13 @@ public class StatisticServlet extends HttpServlet {
         }
         if (Objects.nonNull(epicKey)) {
             MutableIssue epicIssue = issueManager.getIssueObject(epicKey);
-            List<Issue> inwardLinks = issueLinkManager.getOutwardLinks(epicIssue.getId()).stream()
-                    .map(IssueLink::getDestinationObject)
+            List<Issue> outwardLinks = issueLinkManager.getOutwardLinks(epicIssue.getId()).stream()
+                    .map(IssueLink::getDestinationObject).collect(Collectors.toList());
+            List<Issue> linkedIssues = outwardLinks.stream()
+                    .filter(issue -> !Objects.nonNull(selectedIssueType) || selectedIssueType.equals(issue.getIssueType().getId()))
                     .collect(Collectors.toList());
-            String[] issueKeys = inwardLinks.stream().map(Issue::getKey).toArray(String[]::new);
+            context.put("issueTypesForProject", outwardLinks.stream().map(Issue::getIssueType).filter(Objects::nonNull).collect(Collectors.toSet()));
+            String[] issueKeys = linkedIssues.stream().map(Issue::getKey).toArray(String[]::new);
             Statistic[] statisticForIssue = statisticService.getStatisticForIssues(issueKeys);
             Map<String, Long> timeSpentMap = Arrays.stream(statisticForIssue).collect(Collectors.toMap(
                     Statistic::getIssueKey,
@@ -87,8 +92,9 @@ public class StatisticServlet extends HttpServlet {
             context.put("timeSpentMap", timeSpentMap);
             context.put("timeFormatter", new TimeFormatter());
             context.put("statisticForIssue", statisticForIssue);
+            context.put("selectedIssueType", selectedIssueType);
             context.put("selectedEpicKey", epicKey);
-            context.put("inwardLinks", inwardLinks);
+            context.put("inwardLinks", linkedIssues);
         }
         resp.setContentType("text/html;charset=utf-8");
         templateRenderer.render("/templates/statistic/statistic.vm", context, resp.getWriter());
