@@ -11,8 +11,7 @@ function getColor(index) {
         '#6554C0',
         '#344563',
         '#C1C7D0',
-        '#403294',
-
+        '#403294'
     ];
 
     if (index > colorArray.length) {
@@ -44,16 +43,33 @@ function fillTimeSpentMap(selected) {
     })
 }
 
+function getIssueSelectedKeys() {
+    var result = [];
+    var elements = document.querySelectorAll(".issue-selected-key");
+    for (var i = 0; i < elements.length; i++) {
+        result.push(elements[i])
+    }
+    return result;
+}
+
 function getSelectedTableItems() {
-    return new Array(...document.querySelectorAll(".issue-selected-key"))
-        .filter(el => el.checked)
-        .map(el => el.id);
+    return getIssueSelectedKeys()
+        .filter(function (el) {
+            return el.checked;
+        })
+        .map(function (el) {
+            return el.id;
+        });
 }
 
 function getSelectedIssueIds() {
-    return new Array(...document.querySelectorAll(".issue-selected-key"))
-        .filter(el => el.checked)
-        .map(el => el.dataset.issueid);
+    return getIssueSelectedKeys()
+        .filter(function (el) {
+            return el.checked;
+        })
+        .map(function (el) {
+            return el.dataset.issueid;
+        });
 }
 
 function loadExcel() {
@@ -64,7 +80,7 @@ function loadExcel() {
 
 function fillAllCheckBoxes() {
     var checkedAll = document.querySelector("#header-check").checked;
-    new Array(...document.querySelectorAll(".issue-selected-key")).forEach(value => {
+    getIssueSelectedKeys().forEach(function (value) {
         value.checked = checkedAll;
     })
     rerenderChart();
@@ -91,8 +107,8 @@ function renderChart() {
     initiateChart(chartData);
 }
 
-function longToTime(long) {
-    var seconds = long / 1000;
+function longToTime(millis) {
+    var seconds = millis / 1000;
     var d = Math.floor(seconds / 32400);
     var h = Math.floor(seconds / 3600 - d * 9);
     var m = Math.floor(seconds % 3600 / 60);
@@ -124,30 +140,32 @@ function initiateChart(chartData) {
             tooltips: {
                 displayColors: false,
                 callbacks: {
-                    title: function (tooltipItems, data) {
+                    title: function () {
                         return '';
                     },
                     label: function (tooltipItem, data) {
-                        let datum = data.datasets[0].data[tooltipItem.index];
-                        let label = data.labels[tooltipItem.index];
+                        var datum = data.datasets[0].data[tooltipItem.index];
+                        var label = data.labels[tooltipItem.index];
                         return label + "(" + longToTime(datum) + ")";
                     }
                 }
             },
             plugins: {
                 datalabels: {
-                    formatter: (value, ctx) => {
-                        let datasets = ctx.chart.data.datasets;
+                    formatter: function (value, ctx) {
+                        var datasets = ctx.chart.data.datasets;
                         if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
-                            let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+                            var sum = datasets[0].data.reduce(function (a, b) {
+                                return a + b;
+                            }, 0);
                             return Math.round((value / sum) * 100) + '%';
                         } else {
                             return percentage;
                         }
                     },
-                    color: '#100101',
+                    color: '#100101'
                 }
             }
-        },
+        }
     });
 }
