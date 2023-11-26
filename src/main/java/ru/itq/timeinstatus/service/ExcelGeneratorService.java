@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xssf.usermodel.*;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -126,6 +127,11 @@ public class ExcelGeneratorService {
         XDDFNumericalDataSource<Double> values = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
                 new CellRangeAddress(0, rowNum - 1, 1, 1));
         chartData.addSeries(xddfCategoryDataSource, values);
+        CTDLbls ctdLbls = chart.getCTChart().getPlotArea().getPieChartArray(0).addNewDLbls();
+        ctdLbls.addNewShowPercent().setVal(true);
+        ctdLbls.addNewShowCatName().setVal(false);
+        ctdLbls.addNewShowVal().setVal(false);
+        ctdLbls.addNewShowSerName().setVal(false);
         chart.plot(chartData);
     }
 
