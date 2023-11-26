@@ -119,6 +119,12 @@
             <artifactId>wstx-asl</artifactId>
             <version>3.2.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.23.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -176,7 +182,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <apache.poi.version>3.17</apache.poi.version>
+        <apache.poi.version>4.1.1</apache.poi.version>
     </properties>
 
 </project>
