@@ -51,8 +51,14 @@ public class StatisticService {
     }
 
     public Statistic[] getStatisticForIssue(Issue issue) {
+        if (Objects.isNull(issue)) {
+            return new Statistic[0];
+        }
         Long projectId = issue.getProjectId();
         String key = issue.getKey();
+        if (Objects.isNull(projectId) || Objects.isNull(key)) {
+            return new Statistic[0];
+        }
         return ao.find(Statistic.class, Query.select().where("ISSUE_KEY=? AND PROJECT_ID=?", key, projectId));
     }
 
