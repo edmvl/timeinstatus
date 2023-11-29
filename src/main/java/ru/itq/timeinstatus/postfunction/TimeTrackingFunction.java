@@ -34,7 +34,6 @@ public class TimeTrackingFunction extends AbstractJiraFunctionProvider {
     private final StatusManager statusManager = ComponentAccessor.getComponent(StatusManager.class);
 
 
-
     @Override
     public void execute(Map transientVars, Map args, PropertySet ps) throws WorkflowException {
         Object currentSteps = transientVars.get("currentSteps");
@@ -44,12 +43,16 @@ public class TimeTrackingFunction extends AbstractJiraFunctionProvider {
             Date startDate = step.getStartDate();
             Date finishDate = step.getFinishDate();
             int actionId = step.getActionId();
-            String nextStatusIdForAction = workflowManager.getNextStatusIdForAction(issue, actionId);
-            String currentStatus = issue.getStatus().getSimpleStatus().getName();
-            String nextStatus = statusManager.getStatus(nextStatusIdForAction).getSimpleStatus().getName();
-            statisticService.saveStatistic(
-                    issue.getProjectId(), issue.getKey(), currentStatus, startDate, nextStatus, finishDate
-            );
+            try {
+                String nextStatusIdForAction = workflowManager.getNextStatusIdForAction(issue, actionId);
+                String currentStatus = issue.getStatus().getSimpleStatus().getName();
+                String nextStatus = statusManager.getStatus(nextStatusIdForAction).getSimpleStatus().getName();
+                statisticService.saveStatistic(
+                        issue.getProjectId(), issue.getKey(), currentStatus, startDate, nextStatus, finishDate
+                );
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage());
+            }
         }
     }
 

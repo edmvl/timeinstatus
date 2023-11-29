@@ -24,7 +24,7 @@ public class ConditionTimeTracking extends AbstractIssueCondition {
     @Override
     public boolean shouldDisplay(ApplicationUser applicationUser, Issue issue, JiraHelper jiraHelper) {
         History[] historyForIssue = historyService.getHistoryForIssue(issue);
-        return Objects.nonNull(historyForIssue) && historyForIssue.length > 0;
+        return Objects.nonNull(historyForIssue) && historyForIssue.length > 1;
     }
 
 

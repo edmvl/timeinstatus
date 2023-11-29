@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.itq</groupId>
     <artifactId>timeinstatus</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 
     <organization>
         <name>edmvl</name>
@@ -173,7 +173,7 @@
     </build>
 
     <properties>
-        <jira.version>7.1.10</jira.version>
+        <jira.version>7.12.3</jira.version>
         <amps.version>8.0.2</amps.version>
         <plugin.testrunner.version>2.0.2</plugin.testrunner.version>
         <atlassian.spring.scanner.version>2.1.7</atlassian.spring.scanner.version>
