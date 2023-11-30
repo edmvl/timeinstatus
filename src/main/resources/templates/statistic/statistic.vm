@@ -80,7 +80,7 @@
 </div>
 
 
-    #if ($inwardLinks.size()>0)
+    #if ($inwardLinks && $inwardLinks.size()>0)
     <div class="field-group" style="margin: 8px auto 8px auto; display: flex">
         <table class="aui" style="width: 700px; margin: auto 20px auto 20px">
             <thead>
