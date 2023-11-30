@@ -108,7 +108,7 @@
                                 name="checkbox"
                                 data-issueid="$inwardLink.getId()"
                                 id="$inwardLink.getKey()"
-                                onchange="rerenderChart()"
+                                onchange="checkBoxUpdated()"
                         >
                     </td>
                 </tr>
@@ -119,7 +119,7 @@
     #end
 <div style="padding-left: 20px">
     <div style="margin: 8px auto 8px auto; display: flex">
-        <button class="aui-button aui-button-primary" onclick="loadExcel()">Выгрузить в Excel</button>
+        <button class="aui-button aui-button-primary" id="load-excel" onclick="loadExcel()" disabled>Выгрузить в Excel</button>
     </div>
 </div>
     #foreach($statistic in $statisticForIssue)
@@ -180,5 +180,6 @@
     });
     fillTimeSpentMap(getSelectedTableItems());
     renderChart();
+    checkBoxUpdated()
 </script>
 </body>

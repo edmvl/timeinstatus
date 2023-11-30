@@ -83,12 +83,19 @@ function fillAllCheckBoxes() {
     getIssueSelectedKeys().forEach(function (value) {
         value.checked = checkedAll;
     })
-    rerenderChart();
+    checkBoxUpdated();
 }
 
-function rerenderChart() {
+function checkBoxUpdated() {
     timeSpentMap = {};
-    fillTimeSpentMap(getSelectedTableItems());
+    var selectedTableItems = getSelectedTableItems();
+    var loadExcelButton = document.getElementById("load-excel");
+    if (!selectedTableItems || selectedTableItems.length === 0) {
+        loadExcelButton.setAttribute("disabled", "true");
+    } else {
+        loadExcelButton.attributes.removeNamedItem("disabled")
+    }
+    fillTimeSpentMap(selectedTableItems);
     if (chart) chart.destroy();
     renderChart();
 }
