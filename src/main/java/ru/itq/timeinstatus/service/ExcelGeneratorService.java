@@ -112,6 +112,9 @@ public class ExcelGeneratorService {
             fillDiagramRow(dataSheet, rowNum, status, timeSpent);
             rowNum++;
         }
+        if (rowNum<1) {
+            return;
+        }
         XSSFDrawing drawing = mainSheet.createDrawingPatriarch();
         ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, 4, 0, 20, 20);
         XSSFChart chart = drawing.createChart(anchor);
