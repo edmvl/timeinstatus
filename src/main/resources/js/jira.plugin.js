@@ -93,7 +93,9 @@ function checkBoxUpdated() {
     if (!selectedTableItems || selectedTableItems.length === 0) {
         loadExcelButton.setAttribute("disabled", "true");
     } else {
-        loadExcelButton.attributes.removeNamedItem("disabled")
+        if (loadExcelButton.attributes.getNamedItem("disabled")) {
+            loadExcelButton.attributes.removeNamedItem("disabled")
+        }
     }
     fillTimeSpentMap(selectedTableItems);
     if (chart) chart.destroy();
